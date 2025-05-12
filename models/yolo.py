@@ -11,7 +11,7 @@ from copy import deepcopy
 from pathlib import Path
 import numpy as np
 import time
-from collections import Iterable
+from collections.abc import Iterable
 
 sys.path.append(Path(__file__).parent.parent.absolute().__str__())  # to run '$ python *.py' files in subdirectories
 logger = logging.getLogger(__name__)

@@ -230,7 +230,8 @@ def STN(image2_tensor, H_tf, offsets=()):
     # while an affine transformation preserves it.
     t_s_flat = t_s.reshape(-1)
     eps, maximal = 1e-2, 10.
-    t_s_flat[t_s_flat.abs() < eps] = eps
+    # t_s_flat[t_s_flat.abs() < eps] = eps
+    t_s_flat = torch.where(t_s_flat.abs() < eps, eps, t_s_flat)
     # 1.25000 / 1.38283e-05 = inf   in float16 (6.55e4)
 
     #  batchsize * width * height
@@ -246,7 +247,11 @@ def STN(image2_tensor, H_tf, offsets=()):
 
 
 def Stitching_Domain_STN(inputs, size_tensor, resized_shift):
-    """Stitching Domain Spatial Transformer Layer"""
+    """
+    Stitching Domain Spatial Transformer Layer
+    size_tensor: [512, 512]
+    resized_shift: 4个顶点的偏移
+    """
     
     def _repeat(x, n_repeats):
         rep = torch.ones(1, n_repeats, dtype=x.dtype)

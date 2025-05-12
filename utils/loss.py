@@ -32,6 +32,15 @@ class ComputeAlignLoss:
             
             overlap_mask = target_mask & warped_mask
             loss_per_level[i] += F.l1_loss(warped_img[overlap_mask], target_image[overlap_mask])
+            
+            # overlap_mask_ = img_torch2numpy(overlap_mask[0].clone().detach(), reverse_channel=True, normalized=True)
+            # warped_img_ = img_torch2numpy(warped_img[0].clone().detach(), reverse_channel=True, normalized=True)
+            # target_image_ = img_torch2numpy(target_image[0].clone().detach(), reverse_channel=True, normalized=True)
+            # cv2.imshow('warped_img', warped_img_)
+            # cv2.imshow('target_image', target_image_)
+            # cv2.imshow('overlap_mask_', overlap_mask_)
+            # cv2.waitKey(0)
+
             # loss_per_level[i] += F.l1_loss(warped_img * overlap_mask, target_image * overlap_mask)
         
         loss = sum([scale * loss_per_level[i] for i, scale in enumerate(self.scales)])

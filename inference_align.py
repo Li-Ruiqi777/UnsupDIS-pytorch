@@ -96,22 +96,15 @@ def infer():
         imgs_raw = imgs_raw.unsqueeze(0)
 
         # Inference
-        t1 = time_synchronized()
         vertices_offsets, warped_imgs, warped_ones = model(imgs)
-        t2 = time_synchronized()
-        # check_align_input(imgs, _exit=False, normalized=True)
-        # check_align_output(warped_imgs, warped_ones, _exit=True)
+
+        # 保存warped原图
+        # cv2.imwrite(str(save_dir / ('%06d_raw3.jpg' % count)), (255*warped_imgs[2]).cpu().squeeze(0).permute(1, 2, 0).numpy().astype(np.uint8))
 
         resized_shift = vertices_offsets * size_tensor.repeat(4).reshape(1, 8, 1) / imgsz
         output = Stitching_Domain_STN(imgs_raw, size_tensor, resized_shift)
         mask_left, warped_left, mask_right, warped_right = \
             np.split(img_torch2numpy(output[0]), (1, 4, 5), axis=-1)
-
-        t3 = time_synchronized()
-        
-        # print(str(save_dir), end='/')
-        # print(f'{count:06d} Done. '
-        #       f'(Inference: {t2 - t1:.3f}s. Postprocessing: {t3 - t2:.3f}s. Total: {t3 - t1:.3f}s.)')
 
         if opt.visualize:
             # for visualization
@@ -119,8 +112,6 @@ def infer():
             cv2.imwrite(str(save_dir / ('%06d_warped_right.jpg' % count)), warped_right)
             cv2.imwrite(str(save_dir / ('%06d_warped_merge.jpg' % count)),
                         cv2.addWeighted(warped_right, 0.5, warped_left, 0.5, 0))
-            # if count >= 100:
-            #     break
         if opt.rmse:
             assert 'coco' in path.lower()
             # this shift transform img2 to img1! fxxk.
